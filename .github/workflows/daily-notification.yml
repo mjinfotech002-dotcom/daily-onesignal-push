@@ -3,7 +3,7 @@ name: Daily OneSignal Push Notification
 on:
   schedule:
     # દરરોજ સવારે 9:00 AM IST (Indian Time)
-    - cron: '30 3 * * *'    # 3:30 UTC = 9:00 AM IST
+    - cron: '30 8 * * *'    # 3:30 UTC = 9:00 AM IST
     
     # જો તમને બીજો સમય જોઈએ તો અહીં બદલો:
     # 8:00 AM IST → '30 2 * * *'
