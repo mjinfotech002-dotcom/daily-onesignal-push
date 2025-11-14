@@ -1,0 +1,31 @@
+name: Daily OneSignal Push Notification
+
+on:
+  schedule:
+    # દરરોજ સવારે 9:00 AM IST (Indian Time)
+    - cron: '30 3 * * *'    # 3:30 UTC = 9:00 AM IST
+    
+    # જો તમને બીજો સમય જોઈએ તો અહીં બદલો:
+    # 8:00 AM IST → '30 2 * * *'
+    # 7:00 PM IST → '30 13 * * *'
+
+jobs:
+  send-notification:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Send Daily Push Notification
+        run: |
+          curl -X POST "https://onesignal.com/api/v1/notifications" \
+            -H "Authorization: Basic ${{ secrets.ONESIGNAL_REST_KEY }}" \
+            -H "Content-Type: application/json" \
+            -d '{
+              "app_id": "${{ secrets.ONESIGNAL_APP_ID }}",
+              "included_segments": ["All"],
+              "contents": {"en": "સારા દિવસની શરૂઆત કરો! 🌞 આજનો પ્રેરણાદાયી સંદેશો તમારા માટે.", "gu": "સારા દિવસની શરૂઆત કરો! 🌞 આજનો પ્રેરણાદાયી સંદેશો તમારા માટે."},
+              "headings": {"en": "દૈનિક પ્રેરણા ✨", "gu": "દૈનિક પ્રેરણા ✨"},
+              "small_icon": "ic_stat_onesignal_default",
+              "android_accent_color": "FF6200EE"
+            }'
+
+      - name: Success Message
+        run: echo "✅ Daily notification sent successfully!"
