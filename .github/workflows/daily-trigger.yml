@@ -2,15 +2,17 @@ name: Daily OneSignal Notification
 
 on:
   schedule:
-    # 5:15 PM IST = 11:35 UTC
-    - cron: "45 11 * * *"
-  workflow_dispatch: {}  # allow manual run
+    - cron: "50 11 * * *"   # 5:15 PM IST
+  workflow_dispatch: {}
 
 jobs:
   send:
     runs-on: ubuntu-latest
     steps:
-      - name: Send OneSignal Notification
+      - name: Install jq
+        run: sudo apt-get install jq
+
+      - name: Send Notification
         run: |
           payload=$(jq -n \
             --arg app_id "${{ secrets.ONESIGNAL_APP_ID }}" \
@@ -31,6 +33,3 @@ jobs:
             -H "Authorization: Basic ${{ secrets.ONESIGNAL_REST_KEY }}" \
             -H "Content-Type: application/json" \
             --data "$payload"
-
-      - name: Done
-        run: echo "✔ Notification sent successfully!"
