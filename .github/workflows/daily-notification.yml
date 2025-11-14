@@ -1,14 +1,14 @@
-name: Trigger OneSignal Scheduled Notification
+name: Trigger OneSignal Dashboard Notification
 
 on:
   schedule:
-    - cron: '15 9 * * *'
+  - cron: '40 9 * * *'
 
 jobs:
   trigger-notification:
     runs-on: ubuntu-latest
     steps:
-      - name: Send Scheduled Notification Now
+      - name: Send OneSignal Dashboard Message Now
         run: |
           curl -X POST "https://onesignal.com/api/v1/notifications/${{ secrets.ONESIGNAL_MESSAGE_ID }}/send" \
             -H "Authorization: Basic ${{ secrets.ONESIGNAL_REST_KEY }}" \
@@ -18,4 +18,4 @@ jobs:
             }'
 
       - name: Success
-        run: echo "✅ OneSignal Dashboard message sent at 2:45 PM!"
+        run: echo "✅ 3:10 PM notification sent from OneSignal Dashboard!"
