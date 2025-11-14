@@ -2,8 +2,8 @@ name: Trigger OneSignal Dashboard Notification
 
 on:
   schedule:
-    # રોજ બપોરે 4:40 વાગ્યે IST (11:10 UTC)
-    - cron: '10 11 * * *'
+    # રોજ બપોરે 4:45 વાગ્યે IST (11:10 UTC)
+    - cron: '15 11 * * *'
 
 jobs:
   trigger-notification:
@@ -19,4 +19,4 @@ jobs:
             }'
 
       - name: Success
-        run: echo "✅ 4:40 PM IST notification sent with Title, Message, Image!"
+        run: echo "✅ 4:45 PM IST notification sent with Title, Message, Image!"
