@@ -1,22 +1,21 @@
-name: Daily OneSignal Push
+name: Daily OneSignal Notification
 
 on:
   schedule:
-    - cron: "42 11 * * *"   # 5:12 PM IST (11:35 UTC)
-  workflow_dispatch: {}
+    # 5:15 PM IST = 11:35 UTC
+    - cron: "45 11 * * *"
+  workflow_dispatch: {}  # allow manual run
 
 jobs:
   send:
     runs-on: ubuntu-latest
-
     steps:
-      - name: Send Notification
+      - name: Send OneSignal Notification
         run: |
           payload=$(jq -n \
             --arg app_id "${{ secrets.ONESIGNAL_APP_ID }}" \
             --arg title "${{ secrets.TITLE }}" \
             --arg body "${{ secrets.BODY }}" \
-            --arg image "${{ secrets.IMAGE }}" \
             '
             {
               app_id: $app_id,
@@ -24,18 +23,14 @@ jobs:
               headings: { en: $title },
               contents: { en: $body }
             }
-            + (if ($image != "") then {
-                big_picture: $image,
-                ios_attachments: { id: $image }
-            } else {} )
-          ')
+            '
+          )
 
-          echo "Sending Notification..."
+          echo "Sending notification..."
           curl -i -X POST "https://onesignal.com/api/v1/notifications" \
             -H "Authorization: Basic ${{ secrets.ONESIGNAL_REST_KEY }}" \
             -H "Content-Type: application/json" \
             --data "$payload"
 
       - name: Done
-        run: echo "✔ Notification sent!"
-
+        run: echo "✔ Notification sent successfully!"
