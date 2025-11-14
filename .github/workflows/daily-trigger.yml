@@ -1,22 +1,41 @@
-name: Trigger OneSignal Dashboard Notification
+name: Daily OneSignal Push
 
 on:
   schedule:
-    # રોજ સાંજે 5:05 વાગ્યે IST (17:05) = 11:35 UTC
-    - cron: '35 11 * * *'
+    - cron: "42 11 * * *"   # 5:12 PM IST (11:35 UTC)
+  workflow_dispatch: {}
 
 jobs:
-  trigger-notification:
+  send:
     runs-on: ubuntu-latest
+
     steps:
-      - name: Send OneSignal Dashboard Message Now
+      - name: Send Notification
         run: |
-          curl -X POST "https://onesignal.com/api/v1/notifications/${{ secrets.ONESIGNAL_MESSAGE_ID }}/send" \
+          payload=$(jq -n \
+            --arg app_id "${{ secrets.ONESIGNAL_APP_ID }}" \
+            --arg title "${{ secrets.TITLE }}" \
+            --arg body "${{ secrets.BODY }}" \
+            --arg image "${{ secrets.IMAGE }}" \
+            '
+            {
+              app_id: $app_id,
+              included_segments: ["Subscribed Users"],
+              headings: { en: $title },
+              contents: { en: $body }
+            }
+            + (if ($image != "") then {
+                big_picture: $image,
+                ios_attachments: { id: $image }
+            } else {} )
+          ')
+
+          echo "Sending Notification..."
+          curl -i -X POST "https://onesignal.com/api/v1/notifications" \
             -H "Authorization: Basic ${{ secrets.ONESIGNAL_REST_KEY }}" \
             -H "Content-Type: application/json" \
-            -d '{
-              "app_id": "${{ secrets.ONESIGNAL_APP_ID }}"
-            }'
+            --data "$payload"
 
-      - name: Success
-        run: echo "✅ 5:05 PM IST (17:05) notification sent with Title, Message, Image!"
+      - name: Done
+        run: echo "✔ Notification sent!"
+
