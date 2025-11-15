@@ -2,7 +2,7 @@ name: Static Daily OneSignal Push
 
 on:
   schedule:
-    - cron: "30 3 * * *"
+    - cron: "35 3 * * *"
   workflow_dispatch: {}
 
 jobs:
