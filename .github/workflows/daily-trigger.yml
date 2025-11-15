@@ -2,34 +2,40 @@ name: Daily OneSignal Notification
 
 on:
   schedule:
-    - cron: "55 11 * * *"   # 5:25 PM IST
+    - cron: "5 3 * * *"    # IST 8:35 AM 
   workflow_dispatch: {}
 
 jobs:
   send:
     runs-on: ubuntu-latest
+
     steps:
       - name: Install jq
         run: sudo apt-get install jq
 
-      - name: Send Notification
+      - name: Fetch title & body from OneSignal
+        id: getdata
         run: |
-          payload=$(jq -n \
-            --arg app_id "${{ secrets.ONESIGNAL_APP_ID }}" \
-            --arg title "${{ secrets.TITLE }}" \
-            --arg body "${{ secrets.BODY }}" \
-            '
-            {
-              app_id: $app_id,
-              included_segments: ["Subscribed Users"],
-              headings: { en: $title },
-              contents: { en: $body }
-            }
-            '
-          )
-
-          echo "Sending notification..."
-          curl -i -X POST "https://onesignal.com/api/v1/notifications" \
+          resp=$(curl -s \
             -H "Authorization: Basic ${{ secrets.ONESIGNAL_REST_KEY }}" \
             -H "Content-Type: application/json" \
-            --data "$payload"
+            "https://onesignal.com/api/v1/apps/${{ secrets.ONESIGNAL_APP_ID }}")
+
+          echo "title=$(echo $resp | jq -r '.daily_title')" >> $GITHUB_OUTPUT
+          echo "body=$(echo $resp | jq -r '.daily_body')" >> $GITHUB_OUTPUT
+
+      - name: Send Notification
+        run: |
+          curl -X POST "https://onesignal.com/api/v1/notifications" \
+            -H "Authorization: Basic ${{ secrets.ONESIGNAL_REST_KEY }}" \
+            -H "Content-Type: application/json" \
+            -d "{
+              \"app_id\": \"${{ secrets.ONESIGNAL_APP_ID }}\",
+              \"included_segments\": [\"Subscribed Users\"],
+              \"headings\": {\"en\": \"${{ steps.getdata.outputs.title }}\"},
+              \"contents\": {\"en\": \"${{ steps.getdata.outputs.body }}\"}
+            }"
+
+      - name: Done
+        run: echo "✔ Notification sent from OneSignal dynamic title & body!"
+
