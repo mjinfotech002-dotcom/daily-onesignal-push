@@ -2,8 +2,7 @@ name: Static Daily OneSignal Push
 
 on:
   schedule:
-    # 8:50 AM IST = 03:05 UTC
-    - cron: "20 3 * * *"
+    - cron: "30 3 * * *"
   workflow_dispatch: {}
 
 jobs:
