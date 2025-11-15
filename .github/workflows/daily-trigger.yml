@@ -2,7 +2,7 @@ name: Static Daily OneSignal Push
 
 on:
   schedule:
-    - cron: "35 3 * * *"
+    - cron: "45 3 * * *"
   workflow_dispatch: {}
 
 jobs:
@@ -27,6 +27,6 @@ jobs:
             }"
 
       - name: Done
-        run: echo "✔ Static 8:35 AM IST notification sent!"
+        run: echo "✔ Static 9:15 AM IST notification sent!"
 
 
