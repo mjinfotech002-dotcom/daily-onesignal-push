@@ -2,7 +2,7 @@ name: Static Daily OneSignal Push
 
 on:
   schedule:
-    - cron: "45 3 * * *"
+    - cron: "55 3 * * *"
   workflow_dispatch: {}
 
 jobs:
@@ -17,7 +17,6 @@ jobs:
             -H "Content-Type: application/json" \
             -d "{
               \"app_id\": \"${{ secrets.ONESIGNAL_APP_ID }}\",
-              \"included_segments\": [\"Subscribed Users\"],
               \"headings\": {
                 \"en\": \"Daily Inspiration ✨\"
               },
@@ -27,6 +26,6 @@ jobs:
             }"
 
       - name: Done
-        run: echo "✔ Static 9:15 AM IST notification sent!"
+        run: echo "✔ Static 9:25 AM IST notification sent!"
 
 
