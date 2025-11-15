@@ -1,30 +1,17 @@
-name: Daily OneSignal Notification
+name: Static Daily OneSignal Push
 
 on:
   schedule:
-    - cron: "5 3 * * *"    # IST 8:35 AM 
+    # 8:50 AM IST = 03:05 UTC
+    - cron: "20 3 * * *"
   workflow_dispatch: {}
 
 jobs:
-  send:
+  send-notification:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Install jq
-        run: sudo apt-get install jq
-
-      - name: Fetch title & body from OneSignal
-        id: getdata
-        run: |
-          resp=$(curl -s \
-            -H "Authorization: Basic ${{ secrets.ONESIGNAL_REST_KEY }}" \
-            -H "Content-Type: application/json" \
-            "https://onesignal.com/api/v1/apps/${{ secrets.ONESIGNAL_APP_ID }}")
-
-          echo "title=$(echo $resp | jq -r '.daily_title')" >> $GITHUB_OUTPUT
-          echo "body=$(echo $resp | jq -r '.daily_body')" >> $GITHUB_OUTPUT
-
-      - name: Send Notification
+      - name: Send Daily Push Notification
         run: |
           curl -X POST "https://onesignal.com/api/v1/notifications" \
             -H "Authorization: Basic ${{ secrets.ONESIGNAL_REST_KEY }}" \
@@ -32,10 +19,15 @@ jobs:
             -d "{
               \"app_id\": \"${{ secrets.ONESIGNAL_APP_ID }}\",
               \"included_segments\": [\"Subscribed Users\"],
-              \"headings\": {\"en\": \"${{ steps.getdata.outputs.title }}\"},
-              \"contents\": {\"en\": \"${{ steps.getdata.outputs.body }}\"}
+              \"headings\": {
+                \"en\": \"Daily Inspiration ✨\"
+              },
+              \"contents\": {
+                \"en\": \"Have a great day! This is your static daily notification.\"
+              }
             }"
 
       - name: Done
-        run: echo "✔ Notification sent from OneSignal dynamic title & body!"
+        run: echo "✔ Static 8:35 AM IST notification sent!"
+
 
